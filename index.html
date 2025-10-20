@@ -216,7 +216,7 @@
                     <img src="yay.png" alt="Yay" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; object-fit: contain; z-index: 10; pointer-events: none;">
                     
                     <!-- Yay kirişi (dinamik) -->
-                    <svg id="bow-string-svg" viewBox="0 0 100 100" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none;">
+                    <svg id="bow-string-svg" viewBox="0 0 100 100" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; opacity: 0; transition: opacity 0.2s;">
                         <path id="bow-string-path" d="M 50,10 L 50,90" stroke="#e8dcc8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
                     </svg>
                     
@@ -264,6 +264,7 @@
         const scoreElement = document.getElementById('score');
         const messageElement = document.getElementById('message');
         const arrow = document.getElementById('arrow');
+        const bowStringSvg = document.getElementById('bow-string-svg');
         const bowStringPath = document.getElementById('bow-string-path');
         const powerMeter = document.getElementById('power-meter');
         const powerFill = document.getElementById('power-fill');
@@ -443,6 +444,13 @@
         }
         
         function updateBowString(powerLevel) {
+            // Kirişi sadece gerilirken göster
+            if (powerLevel > 0) {
+                bowStringSvg.style.opacity = '1';
+            } else {
+                bowStringSvg.style.opacity = '0';
+            }
+            
             // Güç 0-100 arası, maksimum 15 birim geri çekme
             const pullback = (powerLevel / 100) * 15;
             
@@ -541,8 +549,8 @@
             const startX = gameContainer.clientWidth / 2;
             const startY = gameContainer.clientHeight / 2 + 50;
             
-            // Ok hızını hesapla
-            const speed = power * 0.25;
+            // Ok hızını hesapla (yavaşlatıldı: 0.25 -> 0.18)
+            const speed = power * 0.18;
             const vx = Math.cos(bowAngle) * speed;
             const vy = Math.sin(bowAngle) * speed;
             
@@ -564,12 +572,13 @@
             arrowEl.style.position = 'absolute';
             arrowEl.style.left = `${x}px`;
             arrowEl.style.top = `${y}px`;
-            arrowEl.style.width = '48px';
-            arrowEl.style.height = '48px';
+            arrowEl.style.width = '70px';
+            arrowEl.style.height = '70px';
             arrowEl.style.transform = `translate(-50%, -50%) rotate(${angle * 180 / Math.PI}deg)`;
             arrowEl.style.zIndex = '50';
             arrowEl.style.pointerEvents = 'none';
-            arrowEl.innerHTML = '<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="90" stroke="#a0522d" stroke-width="4"/><path d="M 50,0 L 45,12 L 55,12 Z" fill="#c0c0c0"/><path d="M 50,90 L 45,75 L 55,75 Z" fill="#8b4513"/></svg>';
+            arrowEl.style.filter = 'drop-shadow(2px 2px 3px rgba(0,0,0,0.5))'; // Gölge ekle
+            arrowEl.innerHTML = '<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="90" stroke="#a0522d" stroke-width="5"/><path d="M 50,0 L 43,15 L 57,15 Z" fill="#c0c0c0" stroke="#999" stroke-width="1"/><path d="M 45,85 L 50,90 L 55,85" fill="none" stroke="#8b4513" stroke-width="3"/></svg>';
             gameContainer.appendChild(arrowEl);
             return arrowEl;
         }
@@ -584,7 +593,7 @@
             if (!flyingArrow) return;
             
             // Yerçekimi ve rüzgar etkisi
-            flyingArrow.vy += 0.3; // Yerçekimi
+            flyingArrow.vy += 0.2; // Yerçekimi (azaltıldı: 0.3 -> 0.2)
             flyingArrow.vx += windX * 0.02; // Rüzgar yatay
             flyingArrow.vy += windY * 0.02; // Rüzgar dikey
             
