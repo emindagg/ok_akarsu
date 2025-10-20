@@ -152,19 +152,41 @@
         }
         #wind-indicator {
             position: absolute;
-            top: 80px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background: rgba(0,0,0,0.5);
             padding: 10px 15px;
             border-radius: 10px;
             border: 2px solid #c0a070;
             color: white;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #wind-arrow {
+            width: 30px;
+            height: 30px;
+            color: #ef4444;
+            transition: all 0.5s ease;
+            animation: windSway 2s ease-in-out infinite;
+        }
+        @keyframes windSway {
+            0%, 100% { transform: translateX(0px) scale(1); }
+            50% { transform: translateX(3px) scale(1.1); }
+        }
+        .wind-strong #wind-arrow {
+            animation: windSwayStrong 1s ease-in-out infinite;
+        }
+        @keyframes windSwayStrong {
+            0%, 100% { transform: translateX(0px) scale(1); }
+            25% { transform: translateX(-2px) scale(1.15); }
+            75% { transform: translateX(2px) scale(1.15); }
         }
         #lives-container {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
+            top: 10px;
+            left: 10px;
             display: flex;
             gap: 8px;
         }
@@ -228,6 +250,10 @@
                 <div id="power-fill"></div>
             </div>
             <div id="wind-indicator">
+                <svg id="wind-arrow" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 12 L16 12 M16 12 L12 8 M16 12 L12 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="19" cy="12" r="2" fill="currentColor"/>
+                </svg>
                 Rüzgar: <span id="wind-strength">0</span> m/s
             </div>
 
@@ -256,6 +282,7 @@
         const powerFill = document.getElementById('power-fill');
         const windIndicator = document.getElementById('wind-indicator');
         const windStrengthElement = document.getElementById('wind-strength');
+        const windArrowElement = document.getElementById('wind-arrow');
         const livesContainer = document.getElementById('lives-container');
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreElement = document.getElementById('final-score');
@@ -327,12 +354,37 @@
 
         function startWind() {
             windStrength = (Math.random() - 0.5) * 10; // -5 to 5 m/s
-            windStrengthElement.textContent = windStrength.toFixed(1);
+            updateWindDisplay();
+            // Daha gerçekçi rüzgar: Sık güncelleme, küçük değişimler
             windOscillator = setInterval(() => {
-                windStrength += (Math.random() - 0.5) * 2;
+                windStrength += (Math.random() - 0.5) * 1.5;
                 windStrength = Math.max(-10, Math.min(10, windStrength));
-                windStrengthElement.textContent = windStrength.toFixed(1);
-            }, 3000);
+                updateWindDisplay();
+            }, 800);
+        }
+        
+        function updateWindDisplay() {
+            const absWind = Math.abs(windStrength);
+            windStrengthElement.textContent = absWind.toFixed(1);
+            
+            // Rüzgar gücüne göre animasyon
+            if (absWind > 6) {
+                windIndicator.classList.add('wind-strong');
+            } else {
+                windIndicator.classList.remove('wind-strong');
+            }
+            
+            // Rüzgar yönüne göre ok rotasyonu ve renk
+            if (windStrength < -0.5) {
+                windArrowElement.style.transform = `rotate(180deg) scale(${1 + absWind * 0.03})`;
+                windArrowElement.style.opacity = 0.7 + (absWind / 20);
+            } else if (windStrength > 0.5) {
+                windArrowElement.style.transform = `rotate(0deg) scale(${1 + absWind * 0.03})`;
+                windArrowElement.style.opacity = 0.7 + (absWind / 20);
+            } else {
+                windArrowElement.style.transform = 'scale(0.8)';
+                windArrowElement.style.opacity = 0.3;
+            }
         }
 
         function handleMouseMove(event) {
