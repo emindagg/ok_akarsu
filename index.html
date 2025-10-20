@@ -169,19 +169,7 @@
             height: 30px;
             color: #ef4444;
             transition: all 0.5s ease;
-            animation: windSway 2s ease-in-out infinite;
-        }
-        @keyframes windSway {
-            0%, 100% { transform: translateX(0px) scale(1); }
-            50% { transform: translateX(3px) scale(1.1); }
-        }
-        .wind-strong #wind-arrow {
-            animation: windSwayStrong 1s ease-in-out infinite;
-        }
-        @keyframes windSwayStrong {
-            0%, 100% { transform: translateX(0px) scale(1); }
-            25% { transform: translateX(-2px) scale(1.15); }
-            75% { transform: translateX(2px) scale(1.15); }
+            transform-origin: center center;
         }
         #lives-container {
             position: absolute;
@@ -252,7 +240,6 @@
             <div id="wind-indicator">
                 <svg id="wind-arrow" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M4 12 L16 12 M16 12 L12 8 M16 12 L12 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <circle cx="19" cy="12" r="2" fill="currentColor"/>
                 </svg>
                 Rüzgar: <span id="wind-strength">0</span> m/s
             </div>
@@ -295,7 +282,7 @@
         };
 
         // Oyun Durumu
-        let score, lives, isRoundActive, power, isCharging, windOscillator, windStrength, bowAngle, flyingArrow;
+        let score, lives, isRoundActive, power, isCharging, windOscillator, windX, windY, bowAngle, flyingArrow;
         
         // --- ÇEKİRDEK OYUN MANTIĞI ---
 
@@ -353,36 +340,59 @@
         }
 
         function startWind() {
-            windStrength = (Math.random() - 0.5) * 10; // -5 to 5 m/s
+            // Rastgele 360 derece yön
+            const angle = Math.random() * Math.PI * 2;
+            const strength = 3 + Math.random() * 5; // 3-8 m/s
+            windX = Math.cos(angle) * strength;
+            windY = Math.sin(angle) * strength;
+            
             updateWindDisplay();
+            
             // Daha gerçekçi rüzgar: Sık güncelleme, küçük değişimler
             windOscillator = setInterval(() => {
-                windStrength += (Math.random() - 0.5) * 1.5;
-                windStrength = Math.max(-10, Math.min(10, windStrength));
+                // Rüzgar yönü ve gücü yavaşça değişir
+                windX += (Math.random() - 0.5) * 1.5;
+                windY += (Math.random() - 0.5) * 1.5;
+                
+                // Maksimum rüzgar gücünü sınırla
+                const currentStrength = Math.sqrt(windX * windX + windY * windY);
+                if (currentStrength > 10) {
+                    windX = (windX / currentStrength) * 10;
+                    windY = (windY / currentStrength) * 10;
+                }
+                
                 updateWindDisplay();
             }, 800);
         }
         
         function updateWindDisplay() {
-            const absWind = Math.abs(windStrength);
-            windStrengthElement.textContent = absWind.toFixed(1);
+            // Rüzgar gücünü hesapla
+            const windStrength = Math.sqrt(windX * windX + windY * windY);
+            windStrengthElement.textContent = windStrength.toFixed(1);
             
-            // Rüzgar gücüne göre animasyon
-            if (absWind > 6) {
+            // Rüzgar yönünü hesapla (0 = sağ, 90 = aşağı, 180 = sol, 270 = yukarı)
+            const windAngle = Math.atan2(windY, windX);
+            const windAngleDeg = windAngle * 180 / Math.PI;
+            
+            // Rüzgar gücüne göre stil
+            if (windStrength > 6) {
                 windIndicator.classList.add('wind-strong');
             } else {
                 windIndicator.classList.remove('wind-strong');
             }
             
-            // Rüzgar yönüne göre ok rotasyonu ve renk
-            if (windStrength < -0.5) {
-                windArrowElement.style.transform = `rotate(180deg) scale(${1 + absWind * 0.03})`;
-                windArrowElement.style.opacity = 0.7 + (absWind / 20);
-            } else if (windStrength > 0.5) {
-                windArrowElement.style.transform = `rotate(0deg) scale(${1 + absWind * 0.03})`;
-                windArrowElement.style.opacity = 0.7 + (absWind / 20);
+            // Ok rotasyonu ve boyutu
+            const scale = 0.9 + windStrength * 0.04;
+            const opacity = 0.7 + Math.min(windStrength / 15, 0.3);
+            
+            // Hafif sallanma efekti için random offset
+            const wobble = (Math.random() - 0.5) * (windStrength * 0.5);
+            
+            if (windStrength > 0.5) {
+                windArrowElement.style.transform = `rotate(${windAngleDeg + wobble}deg) scale(${scale})`;
+                windArrowElement.style.opacity = opacity;
             } else {
-                windArrowElement.style.transform = 'scale(0.8)';
+                windArrowElement.style.transform = 'rotate(0deg) scale(0.6)';
                 windArrowElement.style.opacity = 0.3;
             }
         }
@@ -535,7 +545,8 @@
             
             // Yerçekimi ve rüzgar etkisi
             flyingArrow.vy += 0.3; // Yerçekimi
-            flyingArrow.vx += windStrength * 0.02; // Rüzgar
+            flyingArrow.vx += windX * 0.02; // Rüzgar yatay
+            flyingArrow.vy += windY * 0.02; // Rüzgar dikey
             
             flyingArrow.x += flyingArrow.vx;
             flyingArrow.y += flyingArrow.vy;
