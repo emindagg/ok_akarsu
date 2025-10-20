@@ -113,12 +113,13 @@
         }
         .stuck-arrow {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             z-index: 15;
             pointer-events: none;
             transform: translate(-50%, -50%);
             animation: stuckWiggle 0.3s ease-out forwards;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.5));
         }
         @keyframes stuckWiggle {
             0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
@@ -499,8 +500,8 @@
             stuckArrow.className = 'stuck-arrow';
             stuckArrow.style.left = `${x}px`;
             stuckArrow.style.top = `${y}px`;
-            // Daha büyük ve görünür ok
-            stuckArrow.innerHTML = '<svg viewBox="0 0 100 100" style="width: 100%; height: 100%;"><line x1="50" y1="10" x2="50" y2="90" stroke="#a0522d" stroke-width="4" stroke-linecap="round"/><path d="M 50,0 L 43,18 L 57,18 Z" fill="#c0c0c0" stroke="#999" stroke-width="1"/><path d="M 45,85 L 50,90 L 55,85" fill="none" stroke="#8b4513" stroke-width="2.5"/></svg>';
+            // Flying arrow ile aynı görünüm
+            stuckArrow.innerHTML = '<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="90" stroke="#a0522d" stroke-width="5"/><path d="M 50,0 L 43,15 L 57,15 Z" fill="#c0c0c0" stroke="#999" stroke-width="1"/><path d="M 45,85 L 50,90 L 55,85" fill="none" stroke="#8b4513" stroke-width="3"/></svg>';
             gameContainer.appendChild(stuckArrow);
             setTimeout(() => stuckArrow.remove(), 3000);
         }
