@@ -272,16 +272,107 @@
             justify-content: center;
             z-index: 100;
         }
+        
+        /* Başlangıç Ekranı */
+        #intro-screen {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        #intro-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            filter: blur(3px);
+        }
+        .intro-content {
+            position: relative;
+            z-index: 1;
+        }
+        .intro-icon {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .btn-start {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #c0a070 0%, #d4af7a 100%);
+            box-shadow: 0 4px 15px rgba(192, 160, 112, 0.4);
+        }
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(192, 160, 112, 0.6);
+        }
+        .outcome-badge {
+            background: rgba(192, 160, 112, 0.1);
+            border: 2px solid #c0a070;
+        }
     </style>
 </head>
 <body class="bg-gray-900 flex items-center justify-center h-screen">
 
     <div class="w-full max-w-5xl mx-auto p-4 aspect-[16/9] relative">
-        <div id="status-bar" class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex justify-center items-center p-3 bg-black/50 rounded-xl shadow-md">
-             <div class="text-2xl font-bold text-white font-['Cinzel']">Puan: <span id="score">0</span></div>
+        
+        <!-- BAŞLANGIÇ EKRANI -->
+        <div id="intro-screen" class="relative w-full h-full rounded-2xl shadow-lg border-4 border-black">
+            <div class="intro-content flex flex-col items-center justify-center h-full px-4 sm:px-8 text-center">
+                
+                <!-- Ok İkonu -->
+                <div class="intro-icon mb-2 sm:mb-4">
+                    <svg width="35" height="35" viewBox="0 0 100 100" class="sm:w-[50px] sm:h-[50px] drop-shadow-lg">
+                        <line x1="50" y1="10" x2="50" y2="90" stroke="#c0a070" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M 50,5 L 45,18 L 55,18 Z" fill="#d4af7a"/>
+                        <path d="M 46,85 L 50,90 L 54,85" fill="none" stroke="#c0a070" stroke-width="3"/>
+                    </svg>
+                </div>
+
+                <!-- Başlık -->
+                <h1 class="text-xl sm:text-3xl font-bold text-white mb-3 sm:mb-6 font-['Cinzel']">
+                    Okçuluk Oyunu
+                </h1>
+
+                <!-- Konu ve Kazanım Kutusu -->
+                <div class="bg-black/30 backdrop-blur-sm rounded-lg p-3 sm:p-4 w-full max-w-sm sm:max-w-xl mb-4 sm:mb-6 border border-gray-600">
+                    <div class="mb-2 sm:mb-3">
+                        <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">Konu</div>
+                        <div class="text-xs sm:text-sm text-white font-semibold leading-tight">
+                            Akarsuların Aşınım ve Birikim Süreçlerine Etkisi
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-600 pt-2 sm:pt-3">
+                        <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">Öğrenme Çıktısı</div>
+                        <div class="outcome-badge rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-gray-200 leading-tight">
+                            <span class="text-amber-400 font-semibold">COĞ.10.3.3.</span> 
+                            Yeryüzü şekillerinin oluşumunu aşınım ve birikim süreçleri açısından çözümleyebilme
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Başla Butonu -->
+                <button id="start-activity-btn" class="btn-start text-white font-bold py-2 px-6 sm:py-3 sm:px-8 rounded-full text-sm sm:text-base font-['Cinzel'] cursor-pointer">
+                    Etkinliğe Başla
+                </button>
+            </div>
         </div>
 
-        <div id="game-container" class="relative w-full h-full rounded-2xl shadow-lg border-4 border-black">
+        <!-- OYUN EKRANI -->
+        <div id="game-wrapper" class="hidden w-full h-full">
+            <div id="game-container" class="relative w-full h-full rounded-2xl shadow-lg border-4 border-black">
+            
+            <div id="status-bar" class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex justify-center items-center p-3 bg-black/50 rounded-xl shadow-md">
+                 <div class="text-2xl font-bold text-white font-['Cinzel']">Puan: <span id="score">0</span></div>
+            </div>
+            
             <div id="lives-container"></div>
             <div id="player-hud">
                 <div id="bow-container">
@@ -323,15 +414,20 @@
                     Yeniden Başla
                 </button>
             </div>
-        </div>
-
-        <div id="message-container" class="text-center absolute bottom-1/2 left-1/2 -translate-x-1/2 z-30 h-12">
-            <p id="message" class="text-5xl font-bold transition-opacity duration-300 opacity-0 text-white" style="text-shadow: 2px 2px 5px black;"></p>
-        </div>
+            
+            <div id="message-container" class="text-center absolute bottom-1/2 left-1/2 -translate-x-1/2 z-30 h-12">
+                <p id="message" class="text-5xl font-bold transition-opacity duration-300 opacity-0 text-white" style="text-shadow: 2px 2px 5px black;"></p>
+            </div>
+            </div><!-- game-container -->
+        </div><!-- game-wrapper -->
+        
     </div>
 
     <script>
         // DOM Elementleri
+        const introScreen = document.getElementById('intro-screen');
+        const gameWrapper = document.getElementById('game-wrapper');
+        const startActivityBtn = document.getElementById('start-activity-btn');
         const gameContainer = document.getElementById('game-container');
         const scoreElement = document.getElementById('score');
         const messageElement = document.getElementById('message');
@@ -901,9 +997,19 @@
             }
         }
 
+        // --- BAŞLANGIÇ EKRANI VE OYUN GEÇİŞİ ---
+        function startActivity() {
+            introScreen.classList.add('hidden');
+            gameWrapper.classList.remove('hidden');
+            // Oyunu başlat
+            setTimeout(() => {
+                startGame();
+            }, 100);
+        }
+        
         // --- OYUNU BAŞLATMA ---
+        startActivityBtn.addEventListener('click', startActivity);
         restartBtn.addEventListener('click', startGame);
-        window.addEventListener('load', startGame);
         
         // Mouse events
         gameContainer.addEventListener('mousemove', handleMouseMove);

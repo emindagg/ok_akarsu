@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Okçuluk Sesleri - Howler.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+</head>
+<body style="font-family: sans-serif; text-align: center; margin-top: 40px;">
+  <h1>🏹 Okçuluk Sesleri</h1>
+  <p>Her kategoride 3 farklı ses örneği bulunur.</p>
+
+  <div id="sounds"></div>
+
+  <script>
+    const soundData = {
+      'Ok Çekme': [
+        'https://cdn.pixabay.com/download/audio/2021/08/04/audio_2d2a7fa00f.mp3',
+        'https://cdn.pixabay.com/download/audio/2022/03/23/audio_3b5c7b3660.mp3',
+        'https://cdn.pixabay.com/download/audio/2023/01/20/audio_8b74b0f4b5.mp3'
+      ],
+      'Ok Fırlatma': [
+        'https://cdn.pixabay.com/download/audio/2021/09/01/audio_35d32b8e74.mp3',
+        'https://cdn.pixabay.com/download/audio/2022/11/01/audio_712a03ebbb.mp3',
+        'https://cdn.pixabay.com/download/audio/2022/05/22/audio_7b1e84e8b9.mp3'
+      ],
+      'Iskalama': [
+        'https://cdn.pixabay.com/download/audio/2022/01/19/audio_6df9e28e2d.mp3',
+        'https://cdn.pixabay.com/download/audio/2021/10/20/audio_5c6bdfc1c0.mp3',
+        'https://cdn.pixabay.com/download/audio/2022/04/10/audio_32b47d01cd.mp3'
+      ],
+      'Doğru Vuruş': [
+        'https://cdn.pixabay.com/download/audio/2023/03/16/audio_9af5f0ec3f.mp3',
+        'https://cdn.pixabay.com/download/audio/2022/12/02/audio_3189b2a4a0.mp3',
+        'https://cdn.pixabay.com/download/audio/2023/05/04/audio_d4a87565ab.mp3'
+      ],
+      'Yanlış Vuruş': [
+        'https://cdn.pixabay.com/download/audio/2022/09/05/audio_44b2b93fd7.mp3',
+        'https://cdn.pixabay.com/download/audio/2023/01/10/audio_8c38cfe6b7.mp3',
+        'https://cdn.pixabay.com/download/audio/2022/07/15/audio_61a6f8d2b2.mp3'
+      ]
+    };
+
+    const container = document.getElementById('sounds');
+
+    Object.keys(soundData).forEach(category => {
+      const section = document.createElement('div');
+      section.innerHTML = `<h2>${category}</h2>`;
+
+      soundData[category].forEach((src, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = `${category} ${index + 1}`;
+        btn.style.margin = '5px';
+        btn.onclick = () => new Howl({ src: [src] }).play();
+        section.appendChild(btn);
+      });
+
+      container.appendChild(section);
+    });
+  </script>
+</body>
+</html>
