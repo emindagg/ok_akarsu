@@ -575,16 +575,22 @@
             stuckArrow.innerHTML = '<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="90" stroke="#a0522d" stroke-width="5"/><path d="M 50,0 L 43,15 L 57,15 Z" fill="#c0c0c0" stroke="#999" stroke-width="1"/><path d="M 45,85 L 50,90 L 55,85" fill="none" stroke="#8b4513" stroke-width="3"/></svg>';
             gameContainer.appendChild(stuckArrow);
             
-            // Doğru hedefe isabet edince hızlı kaybol
-            const fadeTime = fadeQuickly ? 500 : 3000;
+            // Doğru hedefe isabet: 500ms, Yanlış hedefe: 700ms
+            const fadeTime = fadeQuickly ? 500 : 700;
             
             if (fadeQuickly) {
-                // Hedefle birlikte fade out
+                // Hedefle birlikte fade out (doğru hedef)
                 setTimeout(() => {
                     stuckArrow.style.transition = 'opacity 0.3s, transform 0.3s';
                     stuckArrow.style.opacity = '0';
                     stuckArrow.style.transform = 'translate(-50%, -50%) scale(1.5)';
                 }, 200);
+            } else {
+                // Yanlış hedef - çok kısa bekle, hızlı fade
+                setTimeout(() => {
+                    stuckArrow.style.transition = 'opacity 0.3s';
+                    stuckArrow.style.opacity = '0';
+                }, 400);
             }
             
             setTimeout(() => stuckArrow.remove(), fadeTime);
