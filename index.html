@@ -136,17 +136,34 @@
         }
         
         @keyframes targetShatter {
-            0% { transform: scale(1); filter: blur(0px); opacity: 1; }
-            50% { transform: scale(1.3); filter: blur(2px); opacity: 0.5; }
-            100% { transform: scale(1.8); filter: blur(5px); opacity: 0; }
+            0% { 
+                transform: scale(1) rotate(0deg); 
+                filter: blur(0px) brightness(1); 
+                opacity: 1; 
+            }
+            30% { 
+                transform: scale(1.4) rotate(5deg); 
+                filter: blur(3px) brightness(1.5); 
+                opacity: 0.8; 
+            }
+            60% { 
+                transform: scale(1.8) rotate(-3deg); 
+                filter: blur(8px) brightness(2); 
+                opacity: 0.3; 
+            }
+            100% { 
+                transform: scale(2.5) rotate(0deg); 
+                filter: blur(15px) brightness(3); 
+                opacity: 0; 
+            }
         }
         
         .target.hit {
-            animation: targetImpact 0.4s ease-out forwards;
+            animation: targetImpact 0.4s ease-out forwards !important;
         }
         
         .target.shatter {
-            animation: targetShatter 0.5s ease-out forwards;
+            animation: targetShatter 0.5s ease-out forwards !important;
         }
         
         /* Partikül efekti */
@@ -549,7 +566,7 @@
             powerFill.style.width = '0%';
         }
 
-        function createStuckArrow(x, y) {
+        function createStuckArrow(x, y, fadeQuickly = false) {
             const stuckArrow = document.createElement('div');
             stuckArrow.className = 'stuck-arrow';
             stuckArrow.style.left = `${x}px`;
@@ -557,7 +574,20 @@
             // Flying arrow ile aynı görünüm
             stuckArrow.innerHTML = '<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="90" stroke="#a0522d" stroke-width="5"/><path d="M 50,0 L 43,15 L 57,15 Z" fill="#c0c0c0" stroke="#999" stroke-width="1"/><path d="M 45,85 L 50,90 L 55,85" fill="none" stroke="#8b4513" stroke-width="3"/></svg>';
             gameContainer.appendChild(stuckArrow);
-            setTimeout(() => stuckArrow.remove(), 3000);
+            
+            // Doğru hedefe isabet edince hızlı kaybol
+            const fadeTime = fadeQuickly ? 500 : 3000;
+            
+            if (fadeQuickly) {
+                // Hedefle birlikte fade out
+                setTimeout(() => {
+                    stuckArrow.style.transition = 'opacity 0.3s, transform 0.3s';
+                    stuckArrow.style.opacity = '0';
+                    stuckArrow.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                }, 200);
+            }
+            
+            setTimeout(() => stuckArrow.remove(), fadeTime);
         }
         
         function createImpactEffect(x, y, isCorrect) {
@@ -771,8 +801,8 @@
                 // Target shatter animasyonu
                 target.classList.add('shatter');
                 
-                // Stuck arrow ekle (hedef yok olurken)
-                createStuckArrow(arrowX, arrowY);
+                // Stuck arrow ekle (hedefle birlikte kaybolur)
+                createStuckArrow(arrowX, arrowY, true); // fadeQuickly = true
                 
             } else {
                 // YANLIŞ HEDEF - Sadece border
@@ -782,8 +812,8 @@
                 target.style.borderColor = '#f87171';
                 target.classList.add('hit');
                 
-                // Stuck arrow ekle
-                createStuckArrow(arrowX, arrowY);
+                // Stuck arrow ekle (uzun süre kalır)
+                createStuckArrow(arrowX, arrowY, false);
                 
                 updateLivesUI();
             }
