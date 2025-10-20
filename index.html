@@ -593,11 +593,18 @@
             // Çarpışma oldu mu kontrol et
             if (!flyingArrow) return;
             
-            // Yerçekimi ve rüzgar etkisi
-            flyingArrow.vy += 0.2; // Yerçekimi (azaltıldı: 0.3 -> 0.2)
-            flyingArrow.vx += windX * 0.02; // Rüzgar yatay
-            flyingArrow.vy += windY * 0.02; // Rüzgar dikey
+            // Minimal hava direnci (subtle, barely noticeable)
+            flyingArrow.vx *= 0.995;
+            flyingArrow.vy *= 0.995;
             
+            // Yerçekimi
+            flyingArrow.vy += 0.2;
+            
+            // Rüzgar etkisi
+            flyingArrow.vx += windX * 0.02;
+            flyingArrow.vy += windY * 0.02;
+            
+            // Pozisyon güncelle
             flyingArrow.x += flyingArrow.vx;
             flyingArrow.y += flyingArrow.vy;
             
