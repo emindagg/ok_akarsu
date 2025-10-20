@@ -95,18 +95,15 @@
             transition: transform 0.1s ease-out;
             transform-origin: center center;
         }
-        #bow-string {
-            transition: d 0.05s ease-out;
-        }
         #arrow {
             position: absolute;
             width: 150px;
             height: 150px;
-            left: 75px;
-            bottom: 60px;
-            transform-origin: center bottom;
-            z-index: 5;
-            transition: transform 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940), top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940), left 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940);
+            left: 50%;
+            bottom: 50%;
+            transform: translate(-50%, 50%);
+            z-index: 15;
+            pointer-events: none;
         }
         #arrow.fired {
             transform: scale(0.1) rotate(-2deg);
@@ -215,20 +212,16 @@
             <div id="lives-container"></div>
             <div id="player-hud">
                 <div id="bow-container">
-                    <svg viewbox="0 0 100 100" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 10;">
-                        <path d="M 50,5 C 20,40 20,60 50,95 C 80,60 80,40 50,5 Z" fill="none" stroke="#6b4226" stroke-width="5" />
-                        <line x1="50" y1="5" x2="50" y2="95" stroke="#d4c0a0" stroke-width="1" />
-                    </svg>
-                    <div id="bow-string">
-                        <svg viewBox="0 0 100 100">
-                            <path d="M 50,5 Q 50,50 50,95" fill="none" stroke="#d4c0a0" stroke-width="2" />
-                        </svg>
-                    </div>
+                    <img src="yay.png" alt="Yay" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; object-fit: contain; z-index: 10; pointer-events: none;">
                     <div id="arrow">
-                        <svg viewbox="0 0 100 100">
-                             <line x1="50" y1="0" x2="50" y2="90" stroke="#a0522d" stroke-width="2"/>
-                             <path d="M 50,0 L 45,10 L 55,10 Z" fill="#c0c0c0"/>
-                             <path d="M 50,90 L 45,75 L 55,75 Z" fill="#8b4513"/>
+                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                             <!-- Ok şaftı -->
+                             <line x1="50" y1="10" x2="50" y2="90" stroke="#a0522d" stroke-width="3" stroke-linecap="round"/>
+                             <!-- Ok ucu (metal) -->
+                             <path d="M 50,0 L 43,15 L 57,15 Z" fill="#c0c0c0" stroke="#999" stroke-width="0.5"/>
+                             <!-- Ok kuyruk tüyleri -->
+                             <path d="M 45,85 L 50,90 L 55,85" fill="none" stroke="#8b4513" stroke-width="2"/>
+                             <path d="M 46,80 L 50,85 L 54,80" fill="none" stroke="#8b4513" stroke-width="2"/>
                         </svg>
                     </div>
                 </div>
@@ -264,7 +257,6 @@
         const scoreElement = document.getElementById('score');
         const messageElement = document.getElementById('message');
         const arrow = document.getElementById('arrow');
-        const bowString = document.getElementById('bow-string');
         const powerMeter = document.getElementById('power-meter');
         const powerFill = document.getElementById('power-fill');
         const windIndicator = document.getElementById('wind-indicator');
@@ -398,10 +390,13 @@
         }
 
         function handleMouseMove(event) {
-            if (!isRoundActive || flyingArrow) return;
+            if (flyingArrow) return; // Sadece ok uçarken dönmesin
+            
             const containerRect = gameContainer.getBoundingClientRect();
+            // Yay container'ın gerçek merkezi (translateY(80px) dahil)
             const bowCenterX = containerRect.left + containerRect.width / 2;
-            const bowCenterY = containerRect.bottom - 150;
+            const bowCenterY = containerRect.top + containerRect.height / 2 + 80;
+            
             const mouseX = event.clientX;
             const mouseY = event.clientY;
             
@@ -410,9 +405,9 @@
             const dy = mouseY - bowCenterY;
             bowAngle = Math.atan2(dy, dx);
             
-            // Yay ve oku döndür
+            // Yay ve oku döndür (SVG ok başlangıçta aşağı baktığı için +90)
             const angleDeg = (bowAngle * 180 / Math.PI);
-            document.getElementById('bow-container').style.transform = `translateY(80px) rotate(${angleDeg - 90}deg)`;
+            document.getElementById('bow-container').style.transform = `translateY(80px) rotate(${angleDeg + 90}deg)`;
         }
 
         function handleMouseDown(event) {
@@ -640,22 +635,16 @@
             }
             flyingArrow = null;
             
-            lives--;
-            updateLivesUI();
             scoreElement.textContent = score;
             showMessage('Iskaladın!', 'text-yellow-500');
             
             setTimeout(() => {
-                if (lives > 0) {
-                    // Hedefler aynı kalır, sadece ok ve stuck arrow'lar temizlenir
-                    gameContainer.querySelectorAll('.stuck-arrow').forEach(a => a.remove());
-                    gameContainer.querySelectorAll('.flying-arrow').forEach(a => a.remove());
-                    arrow.style.display = 'block';
-                    messageElement.classList.add('opacity-0');
-                    isRoundActive = true;
-                } else {
-                    showGameOver();
-                }
+                // Hedefler aynı kalır, sadece ok ve stuck arrow'lar temizlenir
+                gameContainer.querySelectorAll('.stuck-arrow').forEach(a => a.remove());
+                gameContainer.querySelectorAll('.flying-arrow').forEach(a => a.remove());
+                arrow.style.display = 'block';
+                messageElement.classList.add('opacity-0');
+                isRoundActive = true;
             }, 1500);
         }
 
@@ -679,7 +668,7 @@
             arrow.classList.remove('fired', 'flying');
             arrow.style.top = '';
             arrow.style.left = '';
-            arrow.style.transform = '';
+            arrow.style.transform = 'translate(-50%, 50%)';
             document.getElementById('bow-container').style.transform = 'translateY(80px) rotate(0deg)';
             powerMeter.classList.remove('active');
             powerFill.style.width = '0%';
