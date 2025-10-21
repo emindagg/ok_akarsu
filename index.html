@@ -324,17 +324,15 @@
         
         <!-- BAŞLANGIÇ EKRANI -->
         <div id="intro-screen" class="relative w-full h-full rounded-2xl shadow-lg border-4 border-black">
+            <!-- Tam Ekran Butonu -->
+            <button id="fullscreen-btn" class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all duration-300 backdrop-blur-sm border border-gray-600">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                </svg>
+            </button>
+            
             <div class="intro-content flex flex-col items-center justify-center h-full px-4 sm:px-8 text-center">
                 
-                <!-- Ok İkonu -->
-                <div class="intro-icon mb-2 sm:mb-4">
-                    <svg width="35" height="35" viewBox="0 0 100 100" class="sm:w-[50px] sm:h-[50px] drop-shadow-lg">
-                        <line x1="50" y1="10" x2="50" y2="90" stroke="#c0a070" stroke-width="4" stroke-linecap="round"/>
-                        <path d="M 50,5 L 45,18 L 55,18 Z" fill="#d4af7a"/>
-                        <path d="M 46,85 L 50,90 L 54,85" fill="none" stroke="#c0a070" stroke-width="3"/>
-                    </svg>
-                </div>
-
                 <!-- Başlık -->
                 <h1 class="text-xl sm:text-3xl font-bold text-white mb-3 sm:mb-6 font-['Cinzel']">
                     Okçuluk Oyunu
@@ -349,11 +347,18 @@
                         </div>
                     </div>
                     
-                    <div class="border-t border-gray-600 pt-2 sm:pt-3">
+                    <div class="border-t border-gray-600 pt-2 sm:pt-3 mb-2 sm:mb-3">
                         <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">Öğrenme Çıktısı</div>
                         <div class="outcome-badge rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-gray-200 leading-tight">
                             <span class="text-amber-400 font-semibold">COĞ.10.3.3.</span> 
                             Yeryüzü şekillerinin oluşumunu aşınım ve birikim süreçleri açısından çözümleyebilme
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-600 pt-2 sm:pt-3">
+                        <div class="text-[10px] sm:text-xs text-amber-400 uppercase tracking-wider mb-2 font-semibold">Amaç</div>
+                        <div class="text-xs sm:text-sm text-white font-medium leading-relaxed bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-3 sm:p-4 rounded border-l-4 border-amber-400">
+                            Ekrana gelen yer şekillerinden hangisinin akarsular tarafından oluşturulduğunu belirleyip hedef alarak okla vurmanız gerekmektedir.
                         </div>
                     </div>
                 </div>
@@ -592,9 +597,20 @@
             isCharging = true;
             power = 0;
             powerMeter.classList.add('active');
+            
+            // Yay gerilme sesi
+            const bowSound = new Audio('gerilme.mp3');
+            bowSound.volume = 0.5;
+            bowSound.play().catch(e => console.log('Ses çalınamadı:', e));
+            window.bowSound = bowSound;
+            
             const chargeInterval = setInterval(() => {
                 if (!isCharging) {
                     clearInterval(chargeInterval);
+                    if (window.bowSound) {
+                        window.bowSound.pause();
+                        window.bowSound.currentTime = 0;
+                    }
                     updateBowString(0); // Gerilmeyi sıfırla
                     return;
                 }
@@ -647,6 +663,12 @@
             if (window.chargeInterval) {
                 clearInterval(window.chargeInterval);
                 window.chargeInterval = null;
+            }
+            // Gerilme sesini durdur
+            if (window.bowSound) {
+                window.bowSound.pause();
+                window.bowSound.currentTime = 0;
+                window.bowSound = null;
             }
             powerMeter.classList.remove('active');
             
@@ -774,6 +796,10 @@
             isRoundActive = false;
             arrow.style.display = 'none';
             updateBowString(0); // Gerilmeyi sıfırla
+            
+            // Ok sesi çal
+            const arrowSound = new Audio('arrow.wav');
+            arrowSound.play().catch(e => console.log('Ses çalınamadı:', e));
             
             // Yay merkezinden ok başlangıcını hesapla
             const startX = gameContainer.clientWidth / 2;
@@ -1006,6 +1032,29 @@
                 startGame();
             }, 100);
         }
+        
+        // Tam ekran fonksiyonu
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        fullscreenBtn.addEventListener('click', () => {
+            const elem = document.documentElement;
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        });
         
         // --- OYUNU BAŞLATMA ---
         startActivityBtn.addEventListener('click', startActivity);
