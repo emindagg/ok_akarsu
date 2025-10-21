@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1280, initial-scale=1.0, user-scalable=no">
     <title>Okçuluk Oyunu: Yer Şekilleri</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -324,47 +324,40 @@
         
         <!-- BAŞLANGIÇ EKRANI -->
         <div id="intro-screen" class="relative w-full h-full rounded-2xl shadow-lg border-4 border-black">
-            <!-- Tam Ekran Butonu -->
-            <button id="fullscreen-btn" class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all duration-300 backdrop-blur-sm border border-gray-600">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                </svg>
-            </button>
-            
-            <div class="intro-content flex flex-col items-center justify-center h-full px-4 sm:px-8 text-center">
+            <div class="intro-content flex flex-col items-center justify-center h-full px-8 text-center">
                 
                 <!-- Başlık -->
-                <h1 class="text-xl sm:text-3xl font-bold text-white mb-3 sm:mb-6 font-['Cinzel']">
+                <h1 class="text-3xl font-bold text-white mb-6 font-['Cinzel']">
                     Okçuluk Oyunu
                 </h1>
 
                 <!-- Konu ve Kazanım Kutusu -->
-                <div class="bg-black/30 backdrop-blur-sm rounded-lg p-3 sm:p-4 w-full max-w-sm sm:max-w-xl mb-4 sm:mb-6 border border-gray-600">
-                    <div class="mb-2 sm:mb-3">
-                        <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">Konu</div>
-                        <div class="text-xs sm:text-sm text-white font-semibold leading-tight">
+                <div class="bg-black/30 backdrop-blur-sm rounded-lg p-4 w-full max-w-xl mb-6 border border-gray-600">
+                    <div class="mb-3">
+                        <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Konu</div>
+                        <div class="text-sm text-white font-semibold leading-tight">
                             Akarsuların Aşınım ve Birikim Süreçlerine Etkisi
                         </div>
                     </div>
                     
-                    <div class="border-t border-gray-600 pt-2 sm:pt-3 mb-2 sm:mb-3">
-                        <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">Öğrenme Çıktısı</div>
-                        <div class="outcome-badge rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-gray-200 leading-tight">
+                    <div class="border-t border-gray-600 pt-3 mb-3">
+                        <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Öğrenme Çıktısı</div>
+                        <div class="outcome-badge rounded-md px-3 py-2 text-xs text-gray-200 leading-tight">
                             <span class="text-amber-400 font-semibold">COĞ.10.3.3.</span> 
                             Yeryüzü şekillerinin oluşumunu aşınım ve birikim süreçleri açısından çözümleyebilme
                         </div>
                     </div>
                     
-                    <div class="border-t border-gray-600 pt-2 sm:pt-3">
-                        <div class="text-[10px] sm:text-xs text-amber-400 uppercase tracking-wider mb-2 font-semibold">Amaç</div>
-                        <div class="text-xs sm:text-sm text-white font-medium leading-relaxed bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-3 sm:p-4 rounded border-l-4 border-amber-400">
+                    <div class="border-t border-gray-600 pt-3">
+                        <div class="text-xs text-amber-400 uppercase tracking-wider mb-2 font-semibold">Amaç</div>
+                        <div class="text-sm text-white font-medium leading-relaxed bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-4 rounded border-l-4 border-amber-400">
                             Ekrana gelen yer şekillerinden hangisinin akarsular tarafından oluşturulduğunu belirleyip hedef alarak okla vurmanız gerekmektedir.
                         </div>
                     </div>
                 </div>
 
                 <!-- Başla Butonu -->
-                <button id="start-activity-btn" class="btn-start text-white font-bold py-2 px-6 sm:py-3 sm:px-8 rounded-full text-sm sm:text-base font-['Cinzel'] cursor-pointer">
+                <button id="start-activity-btn" class="btn-start text-white font-bold py-3 px-8 rounded-full text-base font-['Cinzel'] cursor-pointer">
                     Etkinliğe Başla
                 </button>
             </div>
@@ -1032,29 +1025,6 @@
                 startGame();
             }, 100);
         }
-        
-        // Tam ekran fonksiyonu
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-        fullscreenBtn.addEventListener('click', () => {
-            const elem = document.documentElement;
-            if (!document.fullscreenElement) {
-                if (elem.requestFullscreen) {
-                    elem.requestFullscreen();
-                } else if (elem.webkitRequestFullscreen) {
-                    elem.webkitRequestFullscreen();
-                } else if (elem.msRequestFullscreen) {
-                    elem.msRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-            }
-        });
         
         // --- OYUNU BAŞLATMA ---
         startActivityBtn.addEventListener('click', startActivity);
